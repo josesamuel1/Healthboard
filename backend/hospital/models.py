@@ -85,6 +85,6 @@ class UnidadeDeInternacao(models.Model):
         verbose_name = 'unidade de internação'
         verbose_name_plural = 'unidades de internação'
 
-    # Função que retorna a data do formulário criado.
+    # Função que retorna a data do formulário criado
     def __str__(self):
         return f"Form da Unidade {self.bloco} do dia {self.data.date()}"
