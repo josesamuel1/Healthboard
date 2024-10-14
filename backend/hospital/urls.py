@@ -13,7 +13,11 @@ router.register('bloco_cirurgico', BlocoCirurgicoModelViewSet)
 router.register('unidade_de_internacao', UnidadeDeInternacaoModelViewSet)
 
 urlpatterns = [
-    # Criando rotas da API dos models usando o router
-    # e incluindo as URL's registradas no router
+    # Criando as rotas dos models e incluindo as URL's registradas no router
     path('', include(router.urls)),
+
+    # Rotas para exportar os dados para Excel
+    path('classificacao_de_risco/export/', ClassificacaoDeRiscoModelViewSet.as_view({'get': 'export_excel'}), name='classificacao-de-risco-export'),
+    path('bloco_cirurgico/export/', BlocoCirurgicoModelViewSet.as_view({'get': 'export_excel'}), name='bloco-cirurgico-export'),
+    path('unidade_de_internacao/export/', UnidadeDeInternacaoModelViewSet.as_view({'get': 'export_excel'}), name='unidade-de-internacao-export'),
 ]
