@@ -19,7 +19,7 @@ export default function TelaFormsBlco() {
       {/* Navbar fixa */}
       <Navbar className="fixed top-0 left-0 w-full z-10" style={{ backgroundColor: '#154B19' }}>
         <NavbarBrand>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ml-6">
             <Image alt="Logo" src="/imagens/imageavatar.svg" width={40} height={40} />
             <div className="font-medium text-white">
               <div>JANY</div>
@@ -29,11 +29,20 @@ export default function TelaFormsBlco() {
         </NavbarBrand>
         <NavbarBrand className="hidden sm:flex gap-4 justify-center">
           <Image alt="Logo" src="/imagens/Logo Healthboard (1).png" width={200} height={140} />
-        </NavbarBrand>
-        <NavbarBrand>
-          <Image alt="Botão Desconecta" src="/imagens/Botão Desconectar.svg" width={100} height={40} />
-        </NavbarBrand>
-      </Navbar>
+          </NavbarBrand>
+            <NavbarBrand>
+               <div className="ml-auto mr-4"> {/* Usei `ml-auto` para empurrar o botão para a borda direita */}
+                    <button type="button" className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 
+                    font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center dark:bg-green-600 dark:hover:bg-green-700 
+                    dark:focus:ring-green-800">
+                    <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                    </svg>
+                    <span className="sr-only">Icon description</span>
+                    </button>
+                </div>
+            </NavbarBrand>
+        </Navbar>
 
       {/* Card principal */}
       <div className="relative z-10 w-full max-w-6xl p-16 mt-28"> {/* Adicionei mt-20 aqui para espaçamento */}
