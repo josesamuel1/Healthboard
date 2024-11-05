@@ -14,13 +14,13 @@ class UsuarioTestCase(TestCase):
             last_name='Doe', 
             coren='1234567',
         )
-        
+
         self.usuario2 = Usuario.objects.create_user(
             username='testuser2', 
             password='23456', 
             first_name='Joseph', 
             last_name='Joestar', 
-            coren='23456780',
+            coren='2345678',
         )
 
     # Função que irá testar se o nome completo do usuário coincide com o informado
