@@ -1,35 +1,49 @@
-import openpyxl
-from openpyxl.utils import get_column_letter
+import pandas as pd
+from io import BytesIO
 from django.http import HttpResponse
 from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
 from .models import *
 from .serializers import *
+from django.db import models
+
 
 # Função criada para exportar dados para Excel
 def export_to_excel(queryset, model_name):
-    # Criando o workbook e uma sheet
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
-    sheet.title = f"{model_name} Data"
-
-    # Definição dos cabeçalhos baseado nos campos do modelo
-    headers = [field.verbose_name for field in queryset.model._meta.fields]
-    sheet.append(headers)
-
-    # Parte para inserir os dados
+    # Converte o queryset em uma lista de dicionários
+    data = []
     for obj in queryset:
-        data = [getattr(obj, field.name) for field in queryset.model._meta.fields]
-        sheet.append(data)
+        record = {
+            'enfermeiro': str(obj.enfermeiro),  # Insere o nome completo do enfermeiro que criou
+            'data': obj.data.replace(tzinfo=None) if obj.data else None,  # Remove  timezone, assim não da erro quando for gerar o arquivo
+        }
 
-    # Ajusta a largura das colunas
-    for col_num, _ in enumerate(headers, 1):
-        column_letter = get_column_letter(col_num)
-        sheet.column_dimensions[column_letter].width = 15
+        # Foi adicionado outros campos do objeto, consertanto o datetime
+        for field in obj._meta.fields:
+            if isinstance(field, models.DateTimeField):
+                value = getattr(obj, field.name)
+                record[field.name] = value.replace(tzinfo=None) if value else None  # Realiza a conversão do timezone
+            else:
+                record[field.name] = getattr(obj, field.name)
 
-    # Realiza o salvamento do arquivo em uma resposta HTTP
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename={model_name}_data.xlsx'
-    workbook.save(response)
+        data.append(record)
+
+    # Realiza a criação do DataFrame
+    df = pd.DataFrame(data)
+
+    # Realiza a remoção de campos que não são necessários, caso tenha
+    if 'id' in df.columns:
+        df.drop(columns=['id'], inplace=True)
+
+    # Salva o DataFrame em um buffer de memória
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name=model_name, index=False)
+    buffer.seek(0)
+
+    # Envia o arquivo como uma resposta HTTP
+    response = HttpResponse(buffer, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename={model_name}.xlsx'
     return response
 
 
@@ -43,7 +57,9 @@ class ClassificacaoDeRiscoModelViewSet(viewsets.ModelViewSet):
 
     # Verifica se o usuário tem as permissões concedidas no Painel do Admin
     permission_classes = [permissions.DjangoModelPermissions]
-    
+
+    # Função que exporta as tabelas em um arquivo Excel.
+    @action(detail=False, methods=['get'], url_path='export')
     def export_excel(self, request):
         queryset = self.get_queryset()
         return export_to_excel(queryset, 'ClassificacaoDeRisco')
@@ -60,6 +76,8 @@ class BlocoCirurgicoModelViewSet(viewsets.ModelViewSet):
     # Verifica se o usuário tem as permissões concedidas no Painel do Admin
     permission_classes = [permissions.DjangoModelPermissions]
 
+    # Função que exporta as tabelas em um arquivo Excel.
+    @action(detail=False, methods=['get'], url_path='export')
     def export_excel(self, request):
         queryset = self.get_queryset()
         return export_to_excel(queryset, 'BlocoCirurgico')
@@ -76,6 +94,8 @@ class UnidadeDeInternacaoModelViewSet(viewsets.ModelViewSet):
     # Verifica se o usuário tem as permissões concedidas no Painel do Admin
     permission_classes = [permissions.DjangoModelPermissions]
 
+    # Função que exporta as tabelas em um arquivo Excel.
+    @action(detail=False, methods=['get'], url_path='export')
     def export_excel(self, request):
         queryset = self.get_queryset()
         return export_to_excel(queryset, 'UnidadeDeInternacao')
