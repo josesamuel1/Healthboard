@@ -23,7 +23,22 @@ SECRET_KEY = 'django-insecure-s=n6_$-pnt&*1*mru+37i=yc-%v-&8=4@ru(s84c!$6df$!ky-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ALLOW_ALL_ORIGINS = True
 ALLOWED_HOSTS = ['*']
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 
 # Redefinindo onde está localizado o novo model padrão dos Usuários do sistema
 AUTH_USER_MODEL = 'profissional.Usuario'
@@ -46,6 +61,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'admin_honeypot',
+    'corsheaders',
 ]
 
 # Configurações do Django Rest Framework 
@@ -81,6 +97,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # Configuração padrão dos Loggings
